@@ -5,8 +5,8 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/server.js",
-    "dev": "ts-node-dev ./server.ts"
+    "start": "node dist/api/index.js",
+    "dev": "ts-node-dev ./api/index.ts"
   },
   "dependencies": {
     "@types/nodemailer": "^6.4.15",

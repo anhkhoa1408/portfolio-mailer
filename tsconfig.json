@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "target": "ESNext",
+    "module": "CommonJS",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "ts-node": {
+    "esm": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}

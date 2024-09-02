@@ -5,6 +5,7 @@ import morgan from "morgan";
 import compression from "compression";
 import router from "./routes/v1";
 import { ErrorResponse, NotFoundError } from "./core/error.response";
+import { rateLimit } from "express-rate-limit";
 
 // init app
 configDotenv();
@@ -20,6 +21,13 @@ app.use(
     extended: true,
   }),
 );
+
+const limiter = rateLimit({
+  windowMs: 5 * 60 * 1000,
+  limit: 5,
+  message: "Too many request",
+});
+app.use(limiter);
 
 // init routes
 app.use("/api/v1", router);

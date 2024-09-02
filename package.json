@@ -4,8 +4,8 @@
   "main": "server.js",
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/api/index.js",
+    "build": "tsc && node postBuild.js",
+    "start": "node ./api/index.js",
     "dev": "ts-node-dev ./api/index.ts"
   },
   "dependencies": {

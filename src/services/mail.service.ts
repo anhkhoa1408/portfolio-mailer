@@ -33,7 +33,7 @@ class MailService {
     const mailOptions = {
       from: `No Reply <${from}>`,
       to: `${to}`,
-      subject: "Contact", // Subject line
+      subject: "NEW CONTACT REQUEST", // Subject line
       html: "<b>Hello!</b> This is a test email sent using Nodemailer and Mailjet.", // HTML body
     };
 

@@ -1,5 +1,8 @@
 import nodemailer from "nodemailer";
 import { BadRequestError } from "../core/error.response";
+import fs from "fs";
+import path from "path";
+import Handlebars from "handlebars";
 
 class MailService {
   static checkValidEmail = (email: string) => {
@@ -30,15 +33,39 @@ class MailService {
       },
     });
 
-    const mailOptions = {
-      from: `${from}`,
+    // New contact email
+    const newContactTemplateSource = fs.readFileSync(
+      path.join(__dirname, "..", "template", "new-contact-email.hbs"),
+      "utf8",
+    );
+    const newContactTemplate = Handlebars.compile(newContactTemplateSource);
+    const newContactEmailHTML = newContactTemplate({ email: from, description: description });
+    const newContactEmailOpts = {
+      from: `no-reply@portfolio-mailer-nine.vercel.app`,
       to: `${to}`,
-      subject: "Hello",
-      text: description,
-      html: "This is a test email", // HTML body
+      subject: "New contact",
+      html: newContactEmailHTML,
     };
+    transporter.sendMail(newContactEmailOpts, (error, info) => {
+      if (error) {
+        throw new BadRequestError({ message: error.message });
+      }
+    });
 
-    transporter.sendMail(mailOptions, (error, info) => {
+    // Thank sender email
+    const receivedContactTemplateSource = fs.readFileSync(
+      path.join(__dirname, "..", "template", "received-contact-email.hbs"),
+      "utf8",
+    );
+    const receivedContactTemplate = Handlebars.compile(receivedContactTemplateSource);
+    const receivedContactEmailHTML = receivedContactTemplate({ email: from });
+    const receivedContactEmailOpts = {
+      from: `no-reply@portfolio-mailer-nine.vercel.app`,
+      to: `${from}`,
+      subject: "Thank you for contacting",
+      html: receivedContactEmailHTML,
+    };
+    transporter.sendMail(receivedContactEmailOpts, (error, info) => {
       if (error) {
         throw new BadRequestError({ message: error.message });
       }

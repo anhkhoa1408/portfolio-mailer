@@ -51,11 +51,11 @@ class MailService {
       "utf8",
     );
     const newContactTemplate = Handlebars.compile(newContactTemplateSource);
-    const newContactEmailHTML = newContactTemplate({ email: from, description: description, contactMetadata });
+    const newContactEmailHTML = newContactTemplate({ email: from, description });
     const newContactEmailOpts = {
       from: `no-reply@portfolio-mailer-nine.vercel.app`,
       to: `${to}`,
-      subject: "New contact",
+      subject: "New contact request",
       html: newContactEmailHTML,
     };
     transporter.sendMail(newContactEmailOpts, (error, info) => {

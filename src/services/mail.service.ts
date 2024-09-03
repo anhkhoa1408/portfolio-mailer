@@ -7,7 +7,7 @@ class MailService {
     return pattern.test(email);
   };
 
-  static sendMail = ({ from, to }: { from?: string; to?: string; description?: string }) => {
+  static sendMail = ({ from, to, description }: { from?: string; to?: string; description?: string }) => {
     if (!from || !to) {
       throw new BadRequestError({
         message: "Missing from address or to address",
@@ -21,20 +21,21 @@ class MailService {
     }
 
     const transporter = nodemailer.createTransport({
-      host: "in-v3.mailjet.com", // Mailjet SMTP server
-      port: 587, // Use port 587 for TLS (or 465 for SSL)
-      secure: false, // Set to false for TLS
+      host: "in-v3.mailjet.com",
+      port: 587,
+      secure: false,
       auth: {
-        user: process.env.MAILJET_API_KEY, // Replace with your Mailjet API Key
-        pass: process.env.MAILJET_SECRET_KEY, // Replace with your Mailjet Secret Key
+        user: process.env.MAILJET_API_KEY,
+        pass: process.env.MAILJET_SECRET_KEY,
       },
     });
 
     const mailOptions = {
-      from: `No Reply <${from}>`,
+      from: `${from}`,
       to: `${to}`,
-      subject: "NEW CONTACT REQUEST", // Subject line
-      html: "<b>Hello!</b> This is a test email sent using Nodemailer and Mailjet.", // HTML body
+      subject: "Hello",
+      text: description,
+      html: "This is a test email", // HTML body
     };
 
     transporter.sendMail(mailOptions, (error, info) => {

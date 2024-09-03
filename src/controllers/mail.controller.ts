@@ -4,10 +4,11 @@ import MailService from "../services/mail.service";
 
 class MailController {
   sendMail = async (req: Request, res: Response, next: NextFunction) => {
+    const { from = "", to = "", description = "" } = req.body;
     MailService.sendMail({
-      from: process.env.SENDER_ADDRESS,
-      to: process.env.RECEIVER_ADDRESS,
-      description: req.body.description,
+      from,
+      to,
+      description,
     });
     return new OK({
       message: "Send mail successfully",

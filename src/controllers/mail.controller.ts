@@ -3,6 +3,15 @@ import { OK } from "../core/success.response";
 import MailService from "../services/mail.service";
 
 class MailController {
+  /**
+   *
+   * @param {String} from
+   * @param {String} to
+   * @param {String} description
+   * @param {Object} contactMetadata
+   * @description send email from sender to receiver
+   * @returns {JSON}
+   */
   sendMail = async (req: Request, res: Response, next: NextFunction) => {
     const {
       from = "",
@@ -15,12 +24,14 @@ class MailController {
         instagram: "",
       },
     } = req.body;
+
     MailService.sendMail({
       from,
       to,
       description,
       contactMetadata,
     });
+
     return new OK({
       message: "Send mail successfully",
     }).send(res);

@@ -5,14 +5,6 @@ import rateLimit from "express-rate-limit";
 
 const router = Router();
 
-if (process.env.NODE_ENV !== "dev") {
-  const limiter = rateLimit({
-    windowMs: 5 * 60 * 1000,
-    limit: 2,
-    message: "Too many request",
-  });
-}
-
 router.post(
   "/send",
   (req, res, next) => {

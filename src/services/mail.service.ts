@@ -10,7 +10,19 @@ class MailService {
     return pattern.test(email);
   };
 
-  static sendMail = ({ from, to, description }: { from?: string; to?: string; description?: string }) => {
+  static sendMail = ({
+    from,
+    to,
+    description,
+    contactMetadata,
+  }: {
+    from?: string;
+    to?: string;
+    description?: string;
+    contactMetadata?: {
+      [k: string]: string;
+    };
+  }) => {
     if (!from || !to) {
       throw new BadRequestError({
         message: "Missing from address or to address",
@@ -39,7 +51,7 @@ class MailService {
       "utf8",
     );
     const newContactTemplate = Handlebars.compile(newContactTemplateSource);
-    const newContactEmailHTML = newContactTemplate({ email: from, description: description });
+    const newContactEmailHTML = newContactTemplate({ email: from, description: description, contactMetadata });
     const newContactEmailOpts = {
       from: `no-reply@portfolio-mailer-nine.vercel.app`,
       to: `${to}`,
@@ -58,7 +70,7 @@ class MailService {
       "utf8",
     );
     const receivedContactTemplate = Handlebars.compile(receivedContactTemplateSource);
-    const receivedContactEmailHTML = receivedContactTemplate({ email: from });
+    const receivedContactEmailHTML = receivedContactTemplate({ email: from, contactMetadata });
     const receivedContactEmailOpts = {
       from: `no-reply@portfolio-mailer-nine.vercel.app`,
       to: `${from}`,

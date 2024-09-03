@@ -22,12 +22,14 @@ app.use(
   }),
 );
 
-const limiter = rateLimit({
-  windowMs: 5 * 60 * 1000,
-  limit: 5,
-  message: "Too many request",
-});
-app.use(limiter);
+if (process.env.NODE_ENV !== "dev") {
+  const limiter = rateLimit({
+    windowMs: 5 * 60 * 1000,
+    limit: 2,
+    message: "Too many request",
+  });
+  app.use(limiter);
+}
 
 // init routes
 app.use("/api/v1", router);

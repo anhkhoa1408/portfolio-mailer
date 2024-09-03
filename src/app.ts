@@ -24,8 +24,8 @@ app.use(
 
 if (process.env.NODE_ENV !== "dev") {
   const limiter = rateLimit({
-    windowMs: 5 * 60 * 1000,
-    limit: 2,
+    windowMs: 2 * 60 * 1000,
+    limit: 20,
     message: "Too many request",
   });
   app.use(limiter);

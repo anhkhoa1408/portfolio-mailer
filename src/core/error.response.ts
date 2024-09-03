@@ -4,10 +4,12 @@ type ErrorResponseType = {
 };
 
 class ErrorResponse extends Error {
+  message = "";
   statusCode = 403;
 
-  constructor({ message, statusCode = 403 }: ErrorResponseType) {
+  constructor({ message = "", statusCode = 403 }: ErrorResponseType) {
     super(message);
+    this.message = message;
     this.statusCode = statusCode;
   }
 }

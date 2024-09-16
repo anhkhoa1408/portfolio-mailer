@@ -11,11 +11,13 @@ class MailService {
   };
 
   static sendMail = ({
+    name,
     from,
     to,
     description,
     contactMetadata,
   }: {
+    name: string;
     from?: string;
     to?: string;
     description?: string;
@@ -23,9 +25,9 @@ class MailService {
       [k: string]: string;
     };
   }) => {
-    if (!from || !to) {
+    if (!name || !from || !to) {
       throw new BadRequestError({
-        message: "Missing from address or to address",
+        message: "Missing fields",
       });
     }
 
@@ -55,7 +57,7 @@ class MailService {
     const newContactEmailOpts = {
       from: `no-reply@portfolio-mailer-nine.vercel.app`,
       to: `${to}`,
-      subject: "New contact request",
+      subject: `New contact request from ${name}`,
       html: newContactEmailHTML,
     };
     transporter.sendMail(newContactEmailOpts, (error, info) => {
@@ -70,7 +72,7 @@ class MailService {
       "utf8",
     );
     const receivedContactTemplate = Handlebars.compile(receivedContactTemplateSource);
-    const receivedContactEmailHTML = receivedContactTemplate({ email: from, contactMetadata });
+    const receivedContactEmailHTML = receivedContactTemplate({ name, email: from, contactMetadata });
     const receivedContactEmailOpts = {
       from: `no-reply@portfolio-mailer-nine.vercel.app`,
       to: `${from}`,

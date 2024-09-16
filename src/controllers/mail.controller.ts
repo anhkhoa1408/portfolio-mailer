@@ -5,6 +5,7 @@ import MailService from "../services/mail.service";
 class MailController {
   /**
    *
+   * @param {String} name
    * @param {String} from
    * @param {String} to
    * @param {String} description
@@ -14,6 +15,7 @@ class MailController {
    */
   sendMail = async (req: Request, res: Response, next: NextFunction) => {
     const {
+      name = "",
       from = "",
       to = "",
       description = "",
@@ -26,6 +28,7 @@ class MailController {
     } = req.body;
 
     MailService.sendMail({
+      name,
       from,
       to,
       description,

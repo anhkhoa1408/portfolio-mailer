@@ -1,15 +1,32 @@
-import express, { NextFunction, Request, Response } from "express";
+import compression from "compression";
+import cors, { CorsOptions, CorsOptionsDelegate } from "cors";
 import { configDotenv } from "dotenv";
+import express, { NextFunction, Request, Response } from "express";
+import { rateLimit } from "express-rate-limit";
 import helmet from "helmet";
 import morgan from "morgan";
-import compression from "compression";
-import router from "./routes/v1";
 import { ErrorResponse, NotFoundError } from "./core/error.response";
-import { rateLimit } from "express-rate-limit";
+import router from "./routes/v1";
+import { HEADERS } from "./auth/authUtils";
 
 // init app
 configDotenv();
 const app = express();
+
+// cors for domain from my portfolio
+const allowedOrigins = process.env.ALLOW_ORIGINS?.split(",") || [];
+const corsOptions: CorsOptions = {
+  origin: (origin, callback) => {
+    if (allowedOrigins.findIndex((item) => origin?.startsWith(item)) > -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST"],
+  allowedHeaders: Object.values(HEADERS),
+};
+app.use(cors(corsOptions));
 
 // init middlewares
 app.use(morgan("dev"));
@@ -27,6 +44,7 @@ if (process.env.NODE_ENV !== "dev") {
     windowMs: 2 * 60 * 1000,
     limit: 50,
     message: "Too many request",
+    validate: { xForwardedForHeader: false },
   });
   app.use(limiter);
 }

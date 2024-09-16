@@ -9,6 +9,7 @@ const router = Router();
 const emailApiLimiter = {
   windowMs: 5 * 60 * 1000,
   limit: 2,
+  validate: { xForwardedForHeader: false },
   message: (req: Request, res: Response, next: NextFunction) => {
     return res.status(429).json(
       new ErrorResponse({

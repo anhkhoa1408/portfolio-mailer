@@ -3,6 +3,8 @@ import { UnauthorizedError } from "../core/error.response";
 
 const HEADERS = {
   API_KEY: "x-api-key",
+  AUTHORIZATION: "Authorization",
+  CONTENT_TYPE: "Content-Type",
 };
 
 const checkApiKey = async (req: Request, res: Response, next: NextFunction) => {
@@ -13,4 +15,4 @@ const checkApiKey = async (req: Request, res: Response, next: NextFunction) => {
   return next();
 };
 
-export { checkApiKey };
+export { checkApiKey, HEADERS };

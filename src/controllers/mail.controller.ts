@@ -27,16 +27,15 @@ class MailController {
       },
     } = req.body;
 
-    MailService.sendMail({
-      name,
-      from,
-      to,
-      description,
-      contactMetadata,
-    });
-
     return new OK({
       message: "Send mail successfully",
+      metadata: await MailService.sendMail({
+        name,
+        from,
+        to,
+        description,
+        contactMetadata,
+      }),
     }).send(res);
   };
 }

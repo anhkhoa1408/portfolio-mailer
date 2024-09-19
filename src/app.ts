@@ -16,13 +16,13 @@ const app = express();
 // cors for domain from my portfolio
 const allowedOrigins = process.env.ALLOW_ORIGINS?.split(",") || [];
 const corsOptions: CorsOptions = {
-  // origin: (origin, callback) => {
-  //   if (allowedOrigins.findIndex((item) => origin?.startsWith(item)) > -1 || !origin) {
-  //     callback(null, true);
-  //   } else {
-  //     callback(new Error("Not allowed by CORS"));
-  //   }
-  // },
+  origin: (origin, callback) => {
+    if (allowedOrigins.findIndex((item) => origin?.startsWith(item)) > -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   methods: ["GET", "POST"],
   allowedHeaders: Object.values(HEADERS),
 };

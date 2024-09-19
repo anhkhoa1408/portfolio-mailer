@@ -68,9 +68,9 @@ class MailService {
           },
         ],
       });
-    } catch (err) {
+    } catch (err: any) {
       throw new BadRequestError({
-        message: "Send email failed",
+        message: err?.response as string,
       });
     }
 
@@ -82,7 +82,7 @@ class MailService {
     const receivedContactTemplate = Handlebars.compile(receivedContactTemplateSource);
     const receivedContactEmailHTML = receivedContactTemplate({ name, email: from, contactMetadata });
     try {
-      await mailjet.post("send", { version: "v3.1" }).request({
+      const res = await mailjet.post("send", { version: "v3.1" }).request({
         Messages: [
           {
             From: {
@@ -100,9 +100,10 @@ class MailService {
           },
         ],
       });
-    } catch (err) {
+      return res.response.data;
+    } catch (err: any) {
       throw new BadRequestError({
-        message: "Send email failed",
+        message: err?.response as string,
       });
     }
   };

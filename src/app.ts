@@ -39,16 +39,6 @@ app.use(
   }),
 );
 
-if (process.env.NODE_ENV !== "dev") {
-  const limiter = rateLimit({
-    windowMs: 2 * 60 * 1000,
-    limit: 50,
-    message: "Too many request",
-    validate: { xForwardedForHeader: false },
-  });
-  app.use(limiter);
-}
-
 // init routes
 app.use("/api/v1", router);
 

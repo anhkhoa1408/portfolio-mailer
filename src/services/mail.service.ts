@@ -1,8 +1,8 @@
-import nodemailer from "nodemailer";
-import { BadRequestError } from "../core/error.response";
 import fs from "fs";
-import path from "path";
 import Handlebars from "handlebars";
+import Mailjet from "node-mailjet";
+import path from "path";
+import { BadRequestError } from "../core/error.response";
 
 class MailService {
   static checkValidEmail = (email: string) => {
@@ -10,7 +10,7 @@ class MailService {
     return pattern.test(email);
   };
 
-  static sendMail = ({
+  static sendMail = async ({
     name,
     from,
     to,
@@ -37,14 +37,9 @@ class MailService {
       });
     }
 
-    const transporter = nodemailer.createTransport({
-      host: "in-v3.mailjet.com",
-      port: 587,
-      secure: false,
-      auth: {
-        user: process.env.MAILJET_API_KEY,
-        pass: process.env.MAILJET_SECRET_KEY,
-      },
+    const mailjet = new Mailjet({
+      apiKey: process.env.MAILJET_API_KEY || "your-api-key",
+      apiSecret: process.env.MAILJET_SECRET_KEY || "your-api-secret",
     });
 
     // New contact email
@@ -54,17 +49,30 @@ class MailService {
     );
     const newContactTemplate = Handlebars.compile(newContactTemplateSource);
     const newContactEmailHTML = newContactTemplate({ email: from, description });
-    const newContactEmailOpts = {
-      from: `no-reply@portfolio-mailer-nine.vercel.app`,
-      to: `${to}`,
-      subject: `New contact request from ${name}`,
-      html: newContactEmailHTML,
-    };
-    transporter.sendMail(newContactEmailOpts, (error, info) => {
-      if (error) {
-        throw new BadRequestError({ message: error.message });
-      }
-    });
+    try {
+      await mailjet.post("send", { version: "v3.1" }).request({
+        Messages: [
+          {
+            From: {
+              Email: "no-reply@portfolio-mailer-nine.vercel.app",
+              Name: "",
+            },
+            To: [
+              {
+                Email: to,
+                Name: name,
+              },
+            ],
+            Subject: `New contact request from ${name}`,
+            HTMLPart: newContactEmailHTML,
+          },
+        ],
+      });
+    } catch (err) {
+      throw new BadRequestError({
+        message: "Send email failed",
+      });
+    }
 
     // Thank sender email
     const receivedContactTemplateSource = fs.readFileSync(
@@ -73,17 +81,30 @@ class MailService {
     );
     const receivedContactTemplate = Handlebars.compile(receivedContactTemplateSource);
     const receivedContactEmailHTML = receivedContactTemplate({ name, email: from, contactMetadata });
-    const receivedContactEmailOpts = {
-      from: `no-reply@portfolio-mailer-nine.vercel.app`,
-      to: `${from}`,
-      subject: "Thank you for contacting",
-      html: receivedContactEmailHTML,
-    };
-    transporter.sendMail(receivedContactEmailOpts, (error, info) => {
-      if (error) {
-        throw new BadRequestError({ message: error.message });
-      }
-    });
+    try {
+      await mailjet.post("send", { version: "v3.1" }).request({
+        Messages: [
+          {
+            From: {
+              Email: "no-reply@portfolio-mailer-nine.vercel.app",
+              Name: "",
+            },
+            To: [
+              {
+                Email: from,
+                Name: "",
+              },
+            ],
+            Subject: "Thank you for contacting",
+            HTMLPart: receivedContactEmailHTML,
+          },
+        ],
+      });
+    } catch (err) {
+      throw new BadRequestError({
+        message: "Send email failed",
+      });
+    }
   };
 }
 
